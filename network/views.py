@@ -102,3 +102,22 @@ def new_post(request):
     return render(request,"network/post.html")
 
 
+
+#edit
+@login_required
+@csrf_protect
+def edit_post(request):
+    if request.method == "POS":
+        request_data = json.loads(request.body)
+        if request_data.edit:
+                try:
+                    post = Post.objects.get(id=request_data.id,user=request.user)
+                    post.content = request_data.edit.strip()
+                    post.save()
+                except Post.DoesNotExist:
+                    return HttpResponse("could not find post ")
+                return JsonResponse(post.serialize(),safe=False)
+        return JsonResponse({
+            "error":"send a valid edit"
+        },status=404)
+
