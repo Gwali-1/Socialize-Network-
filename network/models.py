@@ -20,6 +20,14 @@ class Post(models.Model):
     def __str__(self):
         return f"post by {self.user} on {self.created}"
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "content": self.content,
+            "created":self.created,
+            "user": self.user
+        }
+
 
 
 class Followers(models.Model):
