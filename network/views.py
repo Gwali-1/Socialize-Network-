@@ -1,7 +1,3 @@
-from importlib.resources import contents
-import re
-from turtle import pos
-from urllib import request
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
@@ -10,13 +6,15 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
 import json
+from django.core.paginator import Paginator
 
 from .models import User,Post,Followers,Following
 
 
 def index(request):
-    return render(request, "network/index.html")
+    return HttpResponseRedirect(reverse("all_post",args=(1,)))
 
+    
 
 def login_view(request):
     if request.method == "POST":
@@ -38,9 +36,15 @@ def login_view(request):
         return render(request, "network/login.html")
 
 
+
+
+
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
+
+
+
 
 
 def register(request):
@@ -71,6 +75,26 @@ def register(request):
 
 
 
+
+
+
+@login_required
+def all_post(request,page_num):
+
+    all_post = Post.objects.all().order_by("-created")
+    pages = Paginator(all_post,10)  # show 10 post per page
+
+    if page_num > pages.num_pages:
+        return HttpResponse("error")
+    try:
+        current_page = pages.get_page(page_num)
+        print("yes")
+        return render(request, "network/all_post.html",{
+            "current_page":current_page,
+            "number_of_pages":pages.num_pages
+        })
+    except Exception as e:
+        print(e)
 
 
 
