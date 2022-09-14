@@ -6,6 +6,9 @@ class User(AbstractUser):
     followers_number = models.IntegerField(default=0)
     following_number = models.IntegerField(default=0)
 
+    def __str__(self):
+        return f"{self.username}"
+
 
 
 class Post(models.Model):
@@ -14,16 +17,26 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="post_created")
 
+    def __str__(self):
+        return f"post by {self.user} on {self.created}"
+
 
 
 class Followers(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="user_followers")
     follower = models.ForeignKey(User,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return  f"{self.user} followed by {self.follower}"
    
 
 class Following(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="user_following")
     following = models.ForeignKey(User,on_delete=models.CASCADE)
+
+    def __str__(self):
+         return  f"{self.user} following {self.following}"
+   
 
 
 
