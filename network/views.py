@@ -1,4 +1,5 @@
 from importlib.resources import contents
+import re
 from turtle import pos
 from urllib import request
 from django.contrib.auth import authenticate, login, logout
@@ -123,6 +124,10 @@ def edit_post(request):
 
 
 
+
+
+
+#like/unlike
 @login_required
 @csrf_protect
 def like_or_unlike(request):
@@ -145,9 +150,57 @@ def like_or_unlike(request):
             })
         except Post.DoesNotExist:
             return HttpResponse("culd not find post")
+    return JsonResponse({
+        "error":"request must be a PUT request"
+    },status=404)
             
 
-        
 
-         
 
+
+
+#follow/unfollow
+def follow_or_unfollow(request):
+    if request.method == "PUT":
+        request_data = json.loads(request.body)
+        try:
+            user = User.objects.get(pk=request_data.id)
+            if request.user != user:
+                if request.data.follow:
+                    new_following = Following.objects.create(user=request.user,following=user)
+                    new_follower = Followers.objects.create(user=user,follower=request.user)
+                    user.followers_number += 1
+                    request.user.following_number += 1
+
+                    ##save chamges
+                    new_following.save()
+                    new_follower.save()
+                    user.save()
+                    request.user.save()
+                    return JsonResponse({
+                        "followed":True
+                    })
+                Following.objects.get(user=request.user ,following=user).delete()
+                Followers.objects.get(user=user, follower = request.user).delete()
+
+                return JsonResponse({
+                    "followed":False,
+                    "user":user.username
+                })
+
+            return JsonResponse({
+                "error":"Can't follow yourself"
+            })
+            
+        except User.DoesNotExist:
+            return JsonResponse({
+                "error":"could not follow user at this time"
+            },status=404)
+
+    return JsonResponse({
+        "error":"request must be a PUT request"
+    },status=404)
+
+            
+
+   
