@@ -121,3 +121,33 @@ def edit_post(request):
             "error":"send a valid edit"
         },status=404)
 
+
+
+@login_required
+@csrf_protect
+def like_or_unlike(request):
+    if request.method == "PUT":
+        request_data = json.loads(request.body)
+        try:
+            post = Post.objects.get(id=request_data.id)
+            if request_data.like:
+                post.likes = post.likes + 1
+                post.save()
+                return JsonResponse({
+                    "liked":True
+                })
+
+            post.likes = post.likes  - 1
+            post.save()
+            return JsonResponse({
+
+                "liked":False
+            })
+        except Post.DoesNotExist:
+            return HttpResponse("culd not find post")
+            
+
+        
+
+         
+

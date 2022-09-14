@@ -9,5 +9,8 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
     path("new_post",views.new_post,name="new_post"),
-    path("edit_post",views.edit_post,name="edit_post")
+
+    #APi routes
+    path("edit_post",views.edit_post,name="edit_post"),
+    path("favourite",views.like_or_unlike,name="like_or_unlike")
 ]
