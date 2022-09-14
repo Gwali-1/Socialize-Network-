@@ -12,6 +12,10 @@ from .models import User,Post,Followers,Following
 
 
 def index(request):
+    if not  request.user.is_authenticated:
+        return render(request,"network/index.html",{
+            "error":"Session expired ,Login again"
+        })
     return HttpResponseRedirect(reverse("all_post",args=(1,)))
 
     
@@ -101,6 +105,20 @@ def all_post(request,page_num):
 
 
 
+def following(request):
+    users_following = Following.objects.filter(user=request.user)
+    following_post = Post.objects.filter(user__in=users_following)
+
+    if not  request.user.is_authenticated:
+        return render(request,"network/index.html",{
+            "error":"Session expired ,Login again"
+        })
+  
+
+
+
+
+
 
 
 
@@ -108,6 +126,7 @@ def all_post(request,page_num):
 
 
 #new post
+@csrf_protect
 @login_required
 def new_post(request):
     if request.method == "POST":
@@ -129,15 +148,15 @@ def new_post(request):
 
 
 #edit
-@login_required
 @csrf_protect
+@login_required
 def edit_post(request):
     if request.method == "POS":
         request_data = json.loads(request.body)
-        if request_data.edit:
+        if request_data.edited:
                 try:
                     post = Post.objects.get(id=request_data.id,user=request.user)
-                    post.content = request_data.edit.strip()
+                    post.content = request_data.edited.strip()
                     post.save()
                 except Post.DoesNotExist:
                     return HttpResponse("could not find post ")
@@ -152,8 +171,8 @@ def edit_post(request):
 
 
 #like/unlike
-@login_required
 @csrf_protect
+@login_required
 def like_or_unlike(request):
     if request.method == "PUT":
         request_data = json.loads(request.body)
@@ -184,6 +203,8 @@ def like_or_unlike(request):
 
 
 #follow/unfollow
+@csrf_protect
+@login_required
 def follow_or_unfollow(request):
     if request.method == "PUT":
         request_data = json.loads(request.body)
@@ -220,7 +241,6 @@ def follow_or_unfollow(request):
             return JsonResponse({
                 "error":"could not follow user at this time"
             },status=404)
-
     return JsonResponse({
         "error":"request must be a PUT request"
     },status=404)
