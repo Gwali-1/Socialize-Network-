@@ -168,10 +168,7 @@ def new_post(request):
             "error":"enter valid post"
         })
     
-    #if we are using a single page as post 
-    return render(request,"network/post.html")
-
-
+  
 
 
 #profile
