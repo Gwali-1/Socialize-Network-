@@ -167,6 +167,7 @@ def new_post(request):
         return render(request,"network/post.html",{
             "error":"enter valid post"
         })
+    return render(request, "network/post.html")
     
   
 
