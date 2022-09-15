@@ -100,7 +100,7 @@ def all_post(request,page_num):
         return HttpResponse("error")
     try:
         current_page = pages.get_page(page_num)
-        print("yes")
+      
         return render(request, "network/all_post.html",{
             "current_page":current_page,
             "number_of_pages":pages.num_pages

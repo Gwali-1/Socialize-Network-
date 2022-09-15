@@ -3,11 +3,11 @@
 
 {% block body %}
 
-<div class="border post-form container ">
-    <form class=" mx-auto  " action="">
-        <div class="border">
-            <textarea class=" py-2 d-block w-100 " name="" id="" rows="5"  placeholder="describe.." >
-            </textarea>
+<div class=" post-form container ">
+    <form class="   " action="">
+        <a class="border" href="{% url 'profile'%}"><i class="bi bi-person-fill"></i><strong>@{{ user.username }}</strong></a>
+        <div class="">
+            <textarea class=" post-text-area border d-block w-100 " name="" id="" rows="4" placeholder="whats on your mind ..." ></textarea>
         </div>
        
         <div class="d-flex justify-content-end">
@@ -15,8 +15,11 @@
             
         </div>
       
+        
     </form>
 </div>
+
+{% comment %} <div class="overlay "></div> {% endcomment %}
 
 
 {% endblock body %}
