@@ -13,13 +13,15 @@ from .models import User,Post,Followers,Following
 
 def index(request):
     if not  request.user.is_authenticated:
-        return render(request,"network/index.html",{
+        return render(request,"network/login.html",{
             "error":"Session expired ,Login again"
         })
     return HttpResponseRedirect(reverse("all_post",args=(1,)))
 
     
 
+
+#login
 def login_view(request):
     if request.method == "POST":
 
@@ -42,7 +44,7 @@ def login_view(request):
 
 
 
-
+#logout
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
@@ -50,7 +52,7 @@ def logout_view(request):
 
 
 
-
+#register
 def register(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -81,9 +83,15 @@ def register(request):
 
 
 
-
+#all post
 @login_required
 def all_post(request,page_num):
+
+    if not  request.user.is_authenticated:
+        return render(request,"network/login.html",{
+            "error":"Session expired ,Login again"
+        })
+
 
     all_post = Post.objects.all().order_by("-created")
     pages = Paginator(all_post,10)  # show 10 post per page
@@ -105,15 +113,99 @@ def all_post(request,page_num):
 
 
 
-def following(request):
+
+#following
+def following(request,page_num):
+
+    if not  request.user.is_authenticated:
+        return render(request,"network/login.html",{
+            "error":"Session expired ,Login again"
+        })
+    
     users_following = Following.objects.filter(user=request.user)
     following_post = Post.objects.filter(user__in=users_following)
+
+    pages = Paginator(following_post,10)
+
+    if page_num > pages.num_pages:
+            return HttpResponse("error")
+
 
     if not  request.user.is_authenticated:
         return render(request,"network/index.html",{
             "error":"Session expired ,Login again"
         })
+    try:
+        current_page = pages.get_page(page_num)
+        return render(request,"network/following.html",{
+            "post":current_page
+        })
+    except Exception as e:
+        print(e)
   
+
+
+
+
+
+
+#new post
+@login_required
+def new_post(request):
+    if request.method == "POST":
+        post = request.POST["content"]
+        if post:
+            try:
+                 new_post = Post.objects.create(content=post.strip(),user = request.user)
+                 new_post.save()
+                 return HttpResponseRedirect(reverse("index",args=(1,)))
+            except Exception as e:
+                print(e)
+                return HttpResponse("could not add post: ",e)
+        
+        return render(request,"network/post.html",{
+            "error":"enter valid post"
+        })
+    
+    #if we are using a single page as post 
+    return render(request,"network/post.html")
+
+
+
+
+#profile
+@login_required
+def profile(request):
+    
+    if not  request.user.is_authenticated:
+        return render(request,"network/login.html",{
+            "error":"Session expired ,Login again"
+        })
+
+
+    user_post = Post.objects.filter(user=request.user).order_by("-created")
+    user = request.user
+
+    return render(request,"network/profile.html",{
+        "user_post":user_post,
+        "user" : user
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -124,34 +216,11 @@ def following(request):
 
 #state changing routes
 
-
-#new post
-@csrf_protect
-@login_required
-def new_post(request):
-    if request.method == "POST":
-        post = request.POST["content"]
-        if post:
-            try:
-                 new_post = Post.objects.create(content=post.strip(),user = request.user)
-                 new_post.save()
-            except Exception as e:
-                print(e)
-                return HttpResponse("could not add post: ",e)
-        
-        return render(request,"network/post.html",{
-            "error":"enter valid post"
-        })
-    
-    return render(request,"network/post.html")
-
-
-
 #edit
 @csrf_protect
 @login_required
 def edit_post(request):
-    if request.method == "POS":
+    if request.method == "PUT":
         request_data = json.loads(request.body)
         if request_data.edited:
                 try:
@@ -232,11 +301,9 @@ def follow_or_unfollow(request):
                     "followed":False,
                     "user":user.username
                 })
-
             return JsonResponse({
                 "error":"Can't follow yourself"
             })
-            
         except User.DoesNotExist:
             return JsonResponse({
                 "error":"could not follow user at this time"
