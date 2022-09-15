@@ -123,7 +123,8 @@ def following(request,page_num):
         })
     
     users_following = Following.objects.filter(user=request.user)
-    following_post = Post.objects.filter(user__in=users_following)
+    user_set = [user for user in users_following]
+    following_post = Post.objects.filter(user__in= user_set).order_by("-created")
 
     pages = Paginator(following_post,10)
 
