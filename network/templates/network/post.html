@@ -4,14 +4,19 @@
 {% block body %}
 
 <div class=" post-form container ">
-    <form class="   " action="">
-        <a class="border" href=""><i class="bi bi-person-fill"></i><strong>@{{ user.username }}</strong></a>
+
+    {% if error %}
+        {{error}}
+    {% endif %}
+    <form class=" " action="{% url 'new_post' %}" method="post">
+        {% csrf_token %}
+        <a class="border" href=""><i class="bi bi-person-fill"></i><strong class ="">@{{ user.username }}</strong></a>
         <div class="">
-            <textarea class=" post-text-area border d-block w-100 " name="" id="" rows="4" placeholder="whats on your mind ..." ></textarea>
+            <textarea class=" post-text-area border d-block w-100 " name="content" id="" rows="4" placeholder="whats on your mind ..." ></textarea>
         </div>
        
         <div class="d-flex justify-content-end">
-            <input class="btn btn-primary " type="submit" value="Post">
+            <input class="btn blue-bg-color-tone  btn-primary " type="submit" value="Post">
             
         </div>
       

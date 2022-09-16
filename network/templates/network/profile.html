@@ -8,9 +8,9 @@
         <span class="mx-2 font-italic">Following <span class="text-muted">{{user_profile.following_number}}</span></span>  
         <span class="mx-4 font-italic">Followers <span class="text-muted">{{user_profile.followers_number}}</span></span> 
          <span class="mx-3 text-muted">Joined: {{user.joined}}</span>
-         {% if   user == user_profile %}
+         {% if   user == user_profile  and user.is_authenticated%}
             <div class="mt-4">
-                <span> <button class="btn btn-outline-primary">Follow</button> </span>
+                <span> <button class="btn btn-outline-primary " id="follow_unfollow" data-id = "{{user_profile.id}}">Follow</button> </span>
             </div>
          {% endif %}
       
@@ -21,9 +21,9 @@
         
         {% for post in user_post %}
             <div class=" mt-2 p-3 border-bottom w-75">
-                <a class="border" href=""><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ post.user.username }}</strong></a>
+                <a class="border" href="{% url 'profile' user_profile.id %}"><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ post.user.username }}</strong></a>
                 <div>
-                    <p class="post-content text-break">{{post.content}}</p>
+                    <p class="post-content text-break">{{post.content|linebreaksbr}}</p>
                     <p class="date text-muted ">{{post.created}}</p>
                 </div>
             <a ><i class="bi bi-heart-fill blue-color-tone">{{post.likes}}</i>    <a href="" class="mx-4 text-danger"><i class="bi bi-hand-thumbs-up"></i></a>    <a href=""><i class="bi bi-hand-thumbs-down text-dark"></i></a>

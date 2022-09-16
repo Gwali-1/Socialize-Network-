@@ -38,6 +38,10 @@ nav{
     color: rgb(60, 91, 205);
   }
 
+  .blue-bg-color-tone{
+    background-color:rgb(60, 91, 205); ;
+  }
+
   .hidden{
     display: none;
 }
@@ -61,6 +65,13 @@ textarea {
     outline: none;
 }
 
+.register{
+    border: none;
+    background-color:#ffffff;
+    resize: none;
+    outline: none;
+}
+
 .date{
     margin-top:-15px;
     font-size: 15px;
@@ -71,3 +82,36 @@ textarea {
 .post-content{
     font-size: 19px;
 }
+
+
+
+.nav-img{
+    height:22px;
+}
+
+.image-reg{
+    width: 40%;
+  
+}
+
+
+
+
+@media only screen and (max-width: 600px) {
+    .form-register {
+      width: 100%;
+    }
+  }
+
+  @media only screen and (min-width: 600px) {
+    .form-register {
+      width: 50%;
+    }
+  }
+
+
+@media only screen and (min-width: 600px) {
+    .form-login {
+      width: 50%;
+    }
+  }

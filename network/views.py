@@ -156,16 +156,16 @@ def following(request,page_num):
 @login_required
 def new_post(request):
     if request.method == "POST":
+        print("here")
         post = request.POST["content"]
         if post:
             try:
-                 new_post = Post.objects.create(content=post.strip(),user = request.user)
+                 new_post = Post.objects.create(content=post,user = request.user)
                  new_post.save()
-                 return HttpResponseRedirect(reverse("index",args=(1,)))
+                 return HttpResponseRedirect(reverse("index"))
             except Exception as e:
                 print(e)
                 return HttpResponse("could not add post: ",e)
-        
         return render(request,"network/post.html",{
             "error":"enter valid post"
         })
@@ -259,14 +259,16 @@ def like_or_unlike(request):
                 post.likes = post.likes + 1
                 post.save()
                 return JsonResponse({
-                    "liked":True
+                    "liked":True,
+                    "new_post": post
                 })
 
             post.likes = post.likes  - 1
             post.save()
             return JsonResponse({
 
-                "liked":False
+                "liked":False,
+                "new_post": post
             })
         except Post.DoesNotExist:
             return HttpResponse("culd not find post")
