@@ -4,25 +4,33 @@
 
 <div class="container ">
     <div class="border-bottom pb-2">
-        <p class="border"><strong class= "display-4">@{{user.username}}</strong> </p>
-        <span class="mx-2 font-italic">Following <span class="text-muted">{{user.following_number}}</span></span>  
-        <span class="mx-4 font-italic">Followers <span class="text-muted">{{user.followers_number}}</span></span> 
+        <p class="border"><strong class= "display-4">@{{user_profile.username}}</strong> </p>
+        <span class="mx-2 font-italic">Following <span class="text-muted">{{user_profile.following_number}}</span></span>  
+        <span class="mx-4 font-italic">Followers <span class="text-muted">{{user_profile.followers_number}}</span></span> 
          <span class="mx-3 text-muted">Joined: {{user.joined}}</span>
-        <div class="mt-4">
-            <span> <button class="btn btn-outline-primary">Follow</button> </span>
-        </div>
-    </div>
-
-    <div>
-        {% for post in  %}{% endfor %}
-        <p class=""><strong class= "display-5 font-italic">Posts by @{{user.username}}</strong> </p>
-        <div class=" mt-2 p-3 ">
-            <a class="border" href=""><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ user.username }}</strong></a>
-            <div>
-                <p class="">,mbsc,bs,bmbcs,cbsbsb,cmsnmsnamnsmN</p>
+         {% if   user == user_profile %}
+            <div class="mt-4">
+                <span> <button class="btn btn-outline-primary">Follow</button> </span>
             </div>
-           <a ><i class="bi bi-heart-fill blue-color-tone">4</i>    <a href="" class="mx-4"><i class="bi bi-hand-thumbs-up"></i></a>    <a href=""><i class="bi bi-hand-thumbs-down"></i></a>
-        </div>
+         {% endif %}
+      
+    </div>
+  
+    <div class = "mt-2 posts">
+        <p class=""><strong class= "display-5 font-italic">Posts by @{{user_profile.username}}</strong> </p>
+        
+        {% for post in user_post %}
+            <div class=" mt-2 p-3 border-bottom w-75">
+                <a class="border" href=""><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ post.user.username }}</strong></a>
+                <div>
+                    <p class="post-content text-break">{{post.content}}</p>
+                    <p class="date text-muted ">{{post.created}}</p>
+                </div>
+            <a ><i class="bi bi-heart-fill blue-color-tone">{{post.likes}}</i>    <a href="" class="mx-4 text-danger"><i class="bi bi-hand-thumbs-up"></i></a>    <a href=""><i class="bi bi-hand-thumbs-down text-dark"></i></a>
+            </div>
+        {% endfor %}
+        
+       
     </div>
 </div>
 

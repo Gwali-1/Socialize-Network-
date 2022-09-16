@@ -3,13 +3,13 @@
 
 
 {% block body %}
-
+<p class=" mt-4 border"><strong class= "font-italic"><i class="bi bi-house-door-fill"></i>Home</strong> </p>
 <!-- post form -->
-<div>
+<div class= " border d-flex justify-content-end">
     <a href="{% url 'new_post' %}"> post</a>
 </div>
 
-{% for x in current_page %}
+{% comment %} {% for x in current_page %}
 {{x.content}}
 {%empty%}
 nothing here
@@ -17,85 +17,55 @@ nothing here
 
 {% if not current_page.has_previous%}
 YES
-{% endif %}
+{% endif %} {% endcomment %}
 
 <!-- post displayed -->
-<div class=" border-primary posts" >
-    <div class="border-bottom mt-2 p-3 ">
-        <a class="border" href=""><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ user.username }}</strong></a>
+<div class=" border-primary posts mb-3" >
+
+    {% for post in current_page %}
+    <div class=" mt-3  border-bottom w-75">
+        <a class="border " href=""><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ post.user.username }}</strong></a>
         <div>
-            <p class="">,mbsc,bs,bmbcs,cbsbsb,cmsnmsnamnsmN</p>
+            <p class="post-content text-break">{{post.content}}</p>
+            <p class="date text-muted ">{{post.created}}</p>
         </div>
-       <a ><i class="bi bi-heart-fill blue-color-tone">4</i>    <a href="" class="mx-4"><i class="bi bi-hand-thumbs-up"></i></a>    <a href=""><i class="bi bi-hand-thumbs-down"></i></a>
+        
+    <a ><i class="bi bi-heart-fill blue-color-tone">{{post.likes}}</i>    <a href="" class="mx-4 text-danger"><i class="bi bi-hand-thumbs-up"></i></a>    <a href=""><i class="bi bi-hand-thumbs-down text-dark"></i></a>
     </div>
 
-    <div class="border-bottom mt-2 p-3 ">
-        xxxx
-        <div>
-            <p class=" border">,mbsc,bs,bmbcs,cbsbsb,cmsnmsnamnsmN</p>
-        </div>
-    </div>
-
-    <div class="border-bottom mt-2 p-3 ">
-        xxxx
-        <div>
-            <p class=" border">,mbsc,bs,bmbcs,cbsbsb,cmsnmsnamnsmN</p>
-        </div>
-    </div>
-
-    <div class="border-bottom mt-2 p-3 ">
-        xxxx
-        <div>
-            <p class=" border">,mbsc,bs,bmbcs,cbsbsb,cmsnmsnamnsmN</p>
-        </div>
-    </div>
-
-    <div class="border-bottom mt-2 p-3 ">
-        xxxx
-        <div>
-            <p class=" border">,mbsc,bs,bmbcs,cbsbsb,cmsnmsnamnsmN</p>
-        </div>
-    </div>
-
-    <div class="border-bottom mt-2 p-3 ">
-        xxxx
-        <div>
-            <p class=" border">,mbsc,bs,bmbcs,cbsbsb,cmsnmsnamnsmN</p>
-        </div>
-    </div>
+    {%empty%}
+    nothing here
+    {% endfor %}
 
 
-    <div class="border-bottom mt-2 p-3 ">
-        xxxx
-        <div>
-            <p class=" border">,mbsc,bs,bmbcs,cbsbsb,cmsnmsnamnsmN</p>
-        </div>
-    </div>
 </div>
 
+<div class="p-5"></div>
+{% endblock body %}
 
-
-
+{% block footer %}
 <!-- paggination -->
-<div>
-    <nav aria-label="...">
+<div class="">
+    <nav aria-label="..." class= "fixed-bottom  d-flex justify-content-center ">
         <ul class="pagination pagination-lg">
+
+            {% if current_page.has_previous %}
+            <li class="page-item"><a class="page-link" href="#">{{current_page.previous_page_number}}</a></li>
+            {% endif %}
+
           <li class="page-item active" aria-current="page">
             <span class="page-link">
-              1
+              {{current_page.number}}
               <span class="sr-only">(current)</span>
             </span>
           </li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
+         
+          {% if current_page.has_next %}
+          <li class="page-item"><a class="page-link" href="#">{{current_page.next_page_number}}</a></li>
+          {% endif %}
+        
         </ul>
       </nav>
 
 </div>
-
-
-
-
-
-got it
-{% endblock body %}
+{% endblock footer %}

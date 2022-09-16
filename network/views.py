@@ -141,7 +141,7 @@ def following(request,page_num):
     try:
         current_page = pages.get_page(page_num)
         return render(request,"network/following.html",{
-            "post":current_page
+            "current_page":current_page
         })
     except Exception as e:
         print(e)
@@ -190,7 +190,7 @@ def profile(request,id):
 
         return render(request,"network/profile.html",{
         "user_post":user_post,
-        "user" : user
+        "user_profile" : user
     })
     except User.DoesNotExist:
         return HttpResponse("error, user not found")

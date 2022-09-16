@@ -5,6 +5,44 @@
 
 Following
 
+<div class=" border-primary posts" >
+
+    {% for post in current_page %}
+    <div class=" mt-2 p-3 border-bottom w-75">
+        <a class="border " href=""><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ post.user.username }}</strong></a>
+        <div>
+            <p class="font-weight-bold text-break">{{post.content}}</p>
+            <p class="date text-muted ">{{post.created}}</p>
+        </div>
+        
+    <a ><i class="bi bi-heart-fill blue-color-tone">{{post.likes}}</i>    <a href="" class="mx-4 text-danger"><i class="bi bi-hand-thumbs-up"></i></a>    <a href=""><i class="bi bi-hand-thumbs-down text-dark"></i></a>
+    </div>
+
+    {%empty%}
+    nothing here
+    {% endfor %}
+
+    <div class="p-5"></div>
+
 {% endblock body %}
 
 
+
+{% block footer %}
+<!-- paggination -->
+<div class="">
+    <nav aria-label="..." class= "fixed-bottom  d-flex justify-content-center ">
+        <ul class="pagination pagination-lg">
+          <li class="page-item active" aria-current="page">
+            <span class="page-link">
+              1
+              <span class="sr-only">(current)</span>
+            </span>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+        </ul>
+      </nav>
+
+</div>
+{% endblock footer %}
