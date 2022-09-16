@@ -41,7 +41,7 @@
                 <ul class="navbar-nav mt-4">
                   {% if user.is_authenticated %}
                       <li class="nav-item">
-                          <a class="nav-link" href="{% url 'profile'%}"><i class="bi bi-person-check-fill"></i><strong>{{ user.username }}</strong></a>
+                          <a class="nav-link" href="{% url 'profile'  user.id %}"><i class="bi bi-person-check-fill"></i><strong>{{ user.username }}</strong></a>
                       </li>
                   {% endif %}
                   <li class="nav-item">

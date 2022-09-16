@@ -107,6 +107,8 @@ def all_post(request,page_num):
         })
     except Exception as e:
         print(e)
+        return HttpResponse("no page")
+   
 
 
 
@@ -174,21 +176,28 @@ def new_post(request):
 
 #profile
 @login_required
-def profile(request):
+def profile(request,id):
     
     if not  request.user.is_authenticated:
         return render(request,"network/login.html",{
             "error":"Session expired ,Login again"
         })
 
+    try:
+        user = User.objects.get(pk=id)
+        print(user)
+        user_post = Post.objects.filter(user=user).order_by("-created")
 
-    user_post = Post.objects.filter(user=request.user).order_by("-created")
-    user = request.user
-
-    return render(request,"network/profile.html",{
+        return render(request,"network/profile.html",{
         "user_post":user_post,
         "user" : user
     })
+    except User.DoesNotExist:
+        return HttpResponse("error, user not found")
+
+  
+
+   
 
 
 
