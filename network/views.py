@@ -1,3 +1,5 @@
+from pprint import pprint
+from turtle import pos
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
@@ -252,15 +254,18 @@ def edit_post(request):
 @login_required
 def like_or_unlike(request):
     if request.method == "PUT":
+        print(request.body)
         request_data = json.loads(request.body)
+        print(request_data.get("id"))
         try:
-            post = Post.objects.get(id=request_data.id)
-            if request_data.like:
+            post = Post.objects.get(id=request_data.get("id"))
+            if request_data.get("like"):
                 post.likes = post.likes + 1
                 post.save()
                 return JsonResponse({
                     "liked":True,
-                    "new_post": post
+                    "current_likes": post.likes,
+                    "post_id": post.id
                 })
 
             post.likes = post.likes  - 1
@@ -268,7 +273,8 @@ def like_or_unlike(request):
             return JsonResponse({
 
                 "liked":False,
-                "new_post": post
+                "current_likes": post.likes,
+                "post_id": post.id
             })
         except Post.DoesNotExist:
             return HttpResponse("culd not find post")

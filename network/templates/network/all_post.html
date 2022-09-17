@@ -30,7 +30,7 @@ YES
             <p class="date text-muted ">{{post.created}}</p>
         </div>
         
-    <a ><i class="bi bi-heart-fill blue-color-tone">{{post.likes}}</i>    <a href="" class="mx-4 text-danger" data-id ="{{post.id}}"><i class="bi bi-hand-thumbs-up"></i></a>    <a href="" data-id ="{{post.id}}" ><i class="bi bi-hand-thumbs-down text-dark"></i></a>
+    <a ><i class="bi bi-heart-fill blue-color-tone" id="like-{{post.id}}">{{post.likes}}</i>    <a href="" class="mx-4 text-danger like-btn" data-id ="{{post.id}}"><i class="bi bi-hand-thumbs-up"></i></a>   
     </div>
 
     {%empty%}
