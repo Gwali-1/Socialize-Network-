@@ -297,22 +297,32 @@ def follow_or_unfollow(request):
     if request.method == "PUT":
         request_data = json.loads(request.body)
         try:
-            user = User.objects.get(pk=request_data.id)
-            if request.user != user:
-                if request.data.follow:
-                    new_following = Following.objects.create(user=request.user,following=user)
-                    new_follower = Followers.objects.create(user=user,follower=request.user)
-                    user.followers_number += 1
-                    request.user.following_number += 1
+            user = User.objects.get(pk=request_data.get("id"))
 
-                    ##save chamges
-                    new_following.save()
-                    new_follower.save()
-                    user.save()
-                    request.user.save()
-                    return JsonResponse({
-                        "followed":True
-                    })
+            #if user is already followed 
+            if(Following.objects.get(user=request.user,following=user)):
+                return HttpResponse("you already follow user")    
+
+
+            if request.user != user:
+                if request_data.get("follow"):
+                    try:
+                        new_following = Following.objects.create(user=request.user,following=user)
+                        new_follower = Followers.objects.create(user=user,follower=request.user)
+                        user.followers_number += 1
+                        request.user.following_number += 1
+
+                        ##save chamges
+                        new_following.save()
+                        new_follower.save()
+                        user.save()
+                        request.user.save()
+                        return JsonResponse({
+                            "followed":True
+                        })
+                    except Exception as e:
+                        print(e)
+
                 Following.objects.get(user=request.user ,following=user).delete()
                 Followers.objects.get(user=user, follower = request.user).delete()
 
@@ -320,13 +330,16 @@ def follow_or_unfollow(request):
                     "followed":False,
                     "user":user.username
                 })
+
             return JsonResponse({
                 "error":"Can't follow yourself"
             })
+
         except User.DoesNotExist:
             return JsonResponse({
                 "error":"could not follow user at this time"
             },status=404)
+
     return JsonResponse({
         "error":"request must be a PUT request"
     },status=404)
