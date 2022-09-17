@@ -4,7 +4,7 @@
 
 <div class="container ">
     <div class="border-bottom pb-2">
-        <p class="border"><strong class= "display-4">@{{user_profile.username}}</strong> </p>
+        <p class=""><span class= "display-4 font-weight-bolder">@{{user_profile.username}}</span> </p>
         <span class="mx-2 font-italic">Following <span class="text-muted">{{user_profile.following_number}}</span></span>  
         <span class="mx-4 font-italic">Followers <span class="text-muted">{{user_profile.followers_number}}</span></span> 
          <span class="mx-3 text-muted">Joined: {{user.joined}}</span>
@@ -17,7 +17,7 @@
     </div>
   
     <div class = "mt-2 posts">
-        <p class=""><strong class= "display-5 font-italic">Posts by @{{user_profile.username}}</strong> </p>
+        <p class=""><strong class= "display-5 font-italic fw-bolder">Posts by @{{user_profile.username}}</strong> </p>
         
         {% for post in user_post %}
             <div class=" mt-2 p-3 border-bottom w-75">
@@ -26,7 +26,7 @@
                     <p class="post-content text-break">{{post.content|linebreaksbr}}</p>
                     <p class="date text-muted ">{{post.created}}</p>
                 </div>
-            <a ><i class="bi bi-heart-fill blue-color-tone">{{post.likes}}</i>    <a href="" class="mx-4 text-danger"><i class="bi bi-hand-thumbs-up"></i></a>    <a href=""><i class="bi bi-hand-thumbs-down text-dark"></i></a>
+                <a ><i class="bi bi-heart-fill blue-color-tone" id="like-{{post.id}}">{{post.likes}}</i>    <a href="" class="mx-4 text-danger like-btn" data-id ="{{post.id}}"><i class="bi bi-hand-thumbs-up"></i></a>   
             </div>
         {% endfor %}
         

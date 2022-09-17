@@ -259,6 +259,8 @@ def like_or_unlike(request):
         print(request_data.get("id"))
         try:
             post = Post.objects.get(id=request_data.get("id"))
+
+            #if user wants to like
             if request_data.get("like"):
                 post.likes = post.likes + 1
                 post.save()
@@ -268,10 +270,11 @@ def like_or_unlike(request):
                     "post_id": post.id
                 })
 
+
+            #if user want to unlike
             post.likes = post.likes  - 1
             post.save()
             return JsonResponse({
-
                 "liked":False,
                 "current_likes": post.likes,
                 "post_id": post.id
