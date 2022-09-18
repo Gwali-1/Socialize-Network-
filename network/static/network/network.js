@@ -10,15 +10,14 @@ const followBtn = document.querySelector("#follow_unfollow");
 const profileError = document.querySelector(".profile-error");
 const checkFollow = document.querySelector("#checkFollow");
 
-console.log(followBtn)
-console.log("yes")
 
-
+let follow_action;
 
 let action = true
-let follow_action
 
-console.log(checkFollow)
+
+
+
 if(checkFollow){
     follow_action = false;
 }else{

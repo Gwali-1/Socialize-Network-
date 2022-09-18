@@ -323,7 +323,7 @@ def follow_or_unfollow(request):
                         new_following = Following.objects.create(user=request.user,following=user)
                         new_follower = Followers.objects.create(user=user,follower=request.user)
                         user.followers_number += 1
-                        request.user.following_number += 1
+                       
 
                         ##save chamges
                         new_following.save()
@@ -338,12 +338,11 @@ def follow_or_unfollow(request):
                         print(e)
                
                 try:
+                    
                     print("not unfollowing")
                     Following.objects.get(user=request.user ,following=user).delete()
                     Followers.objects.get(user=user, follower = request.user).delete()
                     user.followers_number -= 1
-                    print(request.user.following_number)
-                    request.user.following_number -= 1
                     print(request.user.following_number)
                     user.save()
                     return JsonResponse({
