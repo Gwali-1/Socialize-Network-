@@ -188,15 +188,16 @@ def profile(request,id):
     try:
         
         user_p = User.objects.get(pk=id)
-        print([x.user.username for x in request.user.user_following.all()])
         user_post = Post.objects.filter(user=user_p).order_by("-created")
 
-        if user_p.username in [x.user.username for x in request.user.user_following.all()]:
+        if user_p in [x.following for x in request.user.user_following.all()]:
+            print("here")
             return render(request,"network/profile.html",{
             "user_post":user_post,
-            "user_profile" : user_p
+            "user_profile" : user_p,
+            "following": "true"
             })
-        
+
         return render(request,"network/profile.html",{
         "user_post":user_post,
         "user_profile" : user_p
@@ -311,11 +312,11 @@ def follow_or_unfollow(request):
             if request.user != user:
                 if request_data.get("follow"):
                  #if user is already followed 
-                    # check = Following.objects.filter(user=request.user,following=user)
-                    # if check:
-                    #     return JsonResponse({
-                    #     "error":"you already follow user",
-                    #  })
+                    check = Following.objects.filter(user=request.user,following=user)
+                    if check:
+                        return JsonResponse({
+                        "error":"you already follow user",
+                     })
 
                     try:
                         print("ok")

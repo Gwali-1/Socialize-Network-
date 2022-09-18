@@ -8,7 +8,7 @@ const token = document.querySelector("meta[name='token'").getAttribute("content"
 const followersNumber = document.querySelector(".followers");
 const followBtn = document.querySelector("#follow_unfollow");
 const profileError = document.querySelector(".profile-error");
-
+const checkFollow = document.querySelector("#checkFollow");
 
 console.log(followBtn)
 console.log("yes")
@@ -16,9 +16,37 @@ console.log("yes")
 
 
 let action = true
-let follow_btn = true
+let follow_action
+
+console.log(checkFollow)
+if(checkFollow){
+    follow_action = false;
+}else{
+    follow_action = true;
+}
+
+console.log("action",follow_action)
+
+
 
 //functions
+
+const followBtnDisplay = function (state){
+    console.log(state)
+    if(state){
+        followBtn.textContent ="Follow";
+        followBtn.classList.remove("followed");
+        followBtn.classList.add("unfollowed");
+    }else{
+        followBtn.textContent ="Following";
+        followBtn.classList.remove("unfollowed");
+        followBtn.classList.add("followed");
+    }
+}
+
+
+
+followBtnDisplay(follow_action);
 
 
 const followUnfollow = function () {
@@ -27,7 +55,7 @@ const followUnfollow = function () {
         headers:{"X-CSRFToken": token},
         body: JSON.stringify({
             id:this.dataset.id,
-            follow: follow_btn,
+            follow: follow_action,
         })
     }).then(response => response.json().then(result => {
         if("error" in result){
@@ -39,20 +67,20 @@ const followUnfollow = function () {
         
 
         //change follow button state
-        if(result.followed){
-            followBtn.textContent ="Following";
-            followBtn.classList.remove("unfollowed");
-            followBtn.classList.add("followed");
-            follow_btn=!result.followed
-        }else{
-            followBtn.textContent ="Follow";
-            followBtn.classList.remove("followed");
-            followBtn.classList.add("unfollowed");
-            follow_btn=!result.followed
-        }
+        // if(result.followed){
+        //     followBtn.textContent ="Following";
+        //     followBtn.classList.remove("unfollowed");
+        //     followBtn.classList.add("followed");
+        // }else{
+        //     followBtn.textContent ="Follow";
+        //     followBtn.classList.remove("followed");
+        //     followBtn.classList.add("unfollowed");
+        // }
+
+        followBtnDisplay(!result.followed);
         followersNumber.textContent = result.current_followers;
-        follow_btn=!result.followed;
-        console.log(follow_btn)
+        follow_action=!result.followed;
+        console.log(follow_action)
 
         // if(followBtn.classList.contains("unfollowed")){
             
