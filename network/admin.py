@@ -17,7 +17,7 @@ class Followersadmin(admin.ModelAdmin):
 class Followingadmin(admin.ModelAdmin):
     list_display = ("id","user","following")
 
-admin.site.register(User,Useradmin)
+admin.site.register(User)
 admin.site.register(Post,Postadmin)
 admin.site.register(Followers,Followersadmin)
 admin.site.register(Following,Followingadmin)

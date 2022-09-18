@@ -96,6 +96,16 @@ textarea {
   
 }
 
+.followed{
+    background-color: rgb(44, 91, 230);
+    color: #F9F6EE;
+}
+
+.unfollowed{
+    color: rgb(44, 91, 230);
+    background-color: #F9F6EE;
+}
+
 
 
 

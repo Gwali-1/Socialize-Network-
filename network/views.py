@@ -186,13 +186,20 @@ def profile(request,id):
         })
 
     try:
-        user = User.objects.get(pk=id)
-        print(user)
-        user_post = Post.objects.filter(user=user).order_by("-created")
+        
+        user_p = User.objects.get(pk=id)
+        print([x.user.username for x in request.user.user_following.all()])
+        user_post = Post.objects.filter(user=user_p).order_by("-created")
 
+        if user_p.username in [x.user.username for x in request.user.user_following.all()]:
+            return render(request,"network/profile.html",{
+            "user_post":user_post,
+            "user_profile" : user_p
+            })
+        
         return render(request,"network/profile.html",{
         "user_post":user_post,
-        "user_profile" : user
+        "user_profile" : user_p
     })
     except User.DoesNotExist:
         return HttpResponse("error, user not found")
@@ -299,14 +306,19 @@ def follow_or_unfollow(request):
         try:
             user = User.objects.get(pk=request_data.get("id"))
 
-            #if user is already followed 
-            if(Following.objects.get(user=request.user,following=user)):
-                return HttpResponse("you already follow user")    
-
+           
 
             if request.user != user:
                 if request_data.get("follow"):
+                 #if user is already followed 
+                    # check = Following.objects.filter(user=request.user,following=user)
+                    # if check:
+                    #     return JsonResponse({
+                    #     "error":"you already follow user",
+                    #  })
+
                     try:
+                        print("ok")
                         new_following = Following.objects.create(user=request.user,following=user)
                         new_follower = Followers.objects.create(user=user,follower=request.user)
                         user.followers_number += 1
@@ -318,22 +330,35 @@ def follow_or_unfollow(request):
                         user.save()
                         request.user.save()
                         return JsonResponse({
-                            "followed":True
+                            "followed":True,
+                            "current_followers" :user.followers_number
                         })
                     except Exception as e:
                         print(e)
+               
+                try:
+                    print("not unfollowing")
+                    Following.objects.get(user=request.user ,following=user).delete()
+                    Followers.objects.get(user=user, follower = request.user).delete()
+                    user.followers_number -= 1
+                    print(request.user.following_number)
+                    request.user.following_number -= 1
+                    print(request.user.following_number)
+                    user.save()
+                    return JsonResponse({
+                        "followed":False,
+                         "current_followers" :user.followers_number
+                    })
+                except Exception as e:
+                    print(e)
+                    return JsonResponse({
+                            "error":"oops something happened , try again later"
+                     },status=404)
 
-                Following.objects.get(user=request.user ,following=user).delete()
-                Followers.objects.get(user=user, follower = request.user).delete()
-
-                return JsonResponse({
-                    "followed":False,
-                    "user":user.username
-                })
 
             return JsonResponse({
                 "error":"Can't follow yourself"
-            })
+            },status=404)
 
         except User.DoesNotExist:
             return JsonResponse({
