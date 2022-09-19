@@ -19,7 +19,7 @@ class Post(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="post_created")
 
     def __str__(self):
-        return f"post by {self.user} on {self.created}"
+        return f" {self.content} : user={self.user} "
 
     def serialize(self):
         return {

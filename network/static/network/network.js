@@ -13,19 +13,7 @@ const checkFollow = document.querySelector("#checkFollow");
 const page_id =Number(document.querySelector(".page_id").value);
 const editPost = document.querySelectorAll(".edit-post");
 const saveUpdate = document.querySelectorAll(".save-update")
-
-
-
-
 let follow_action;
-let action = true
-
-
-saveUpdate.forEach(btn => {
-    console.log(btn.dataset.id)
-})
-console.log("edit",editPost)
-
 
 
 
@@ -64,7 +52,7 @@ const updatePost = function (event){
         postDiv.classList.remove("hidden");
 
         
-    })
+    }).catch(error => console.log(error))
 }
 
 
@@ -78,7 +66,6 @@ const editPostContent = function (event){
     const postcontent = document.querySelector(`.post-content-${this.dataset.id}`);
     const content = document.querySelector(`#post-${this.dataset.id}-update`);
     const updateForm = document.querySelector(`#update-form-${this.dataset.id}`);
-
 
     postDiv.classList.add("hidden");
     updateForm.classList.remove("hidden");
@@ -138,8 +125,14 @@ const followUnfollow = function () {
         console.log(follow_action)
 
 
-    }))
+    })).catch(error => console.log(error))
 }
+
+
+
+
+
+
 
 
 
@@ -152,12 +145,14 @@ const followUnfollow = function () {
 //like/unlike
  const likeUnlikePost = function (event) {
     event.preventDefault();
+
+    console.log(Boolean(this.dataset.action))
     fetch("/favourite",{
         method: "PUT",
         headers:{"X-CSRFToken":token},
         body:JSON.stringify({
             id : this.dataset.id,
-            like: action
+            like: this.dataset.action
         })
     }).then(response => response.json()).then(result => {
         const btn = document.getElementById(`like-${result.post_id}`);
@@ -165,16 +160,20 @@ const followUnfollow = function () {
 
         if(this.innerHTML ==`<i class="bi bi-hand-thumbs-up"></i>`){
             this.innerHTML = `<i class="bi bi-hand-thumbs-up-fill"></i>`
-            action=!result.liked
+            this.dataset.action = "false"
             console.log(action,result.liked)
         }else{
+            console.log(result)
             this.innerHTML =`<i class="bi bi-hand-thumbs-up"></i>`
-            action=!result.liked
+            this.dataset.action = "true"
             console.log(action,result.liked)
         }
         
     }).catch(error => console.log(error))
 }
+
+
+
 
 
 

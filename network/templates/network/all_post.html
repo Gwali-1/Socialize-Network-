@@ -23,6 +23,8 @@ YES
 <!-- post displayed -->
 <div class=" border-primary posts mb-3"  >
 
+    {{liked_posts}}
+
     {% for post in current_page %}
     <div class=" mt-3  border-bottom w-75">
         <a class="border " href=" {% url 'profile' post.user.id %}"><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ post.user.username }}</strong></a>
@@ -30,7 +32,7 @@ YES
             <p class="post-content-{{post.id}} text-break post-content ">{{post.content|linebreaksbr}}</p>
             <p class="date text-muted ">{{post.created}}</p> 
             {% if post.user == request.user %}
-                <a href="" class="edit-post border d-block text-info" data-id="{{post.id}}">Edit</a>
+                <a href="" class="edit-post border d-block text-info w-25" data-id="{{post.id}}">Edit</a>
             {% endif %}
         </div>
 
@@ -56,8 +58,11 @@ YES
             </div>
         {% endif %}
         
-        
-        <a ><i class="bi bi-heart-fill blue-color-tone" id="like-{{post.id}}">{{post.likes}}</i>    <a href="" class="mx-4 text-danger like-btn" data-id ="{{post.id}}"><i class="bi bi-hand-thumbs-up"></i></a>   
+        {% if post  in liked_posts%}
+            <a ><i class="bi bi-heart-fill blue-color-tone" id="like-{{post.id}}">{{post.likes}}</i>    <a href="" class="mx-4 text-danger like-btn" data-id ="{{post.id}}"  data-action="false"><i class="bi bi-hand-thumbs-up-fill"></i></a>   
+        {% else %}
+            <a ><i class="bi bi-heart-fill blue-color-tone" id="like-{{post.id}}">{{post.likes}}</i>    <a href="" class="mx-4 text-danger like-btn" data-id ="{{post.id}}"  data-action="true"><i class="bi bi-hand-thumbs-up"></i></a>   
+        {% endif %}
     </div>
 
     {%empty%}

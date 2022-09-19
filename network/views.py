@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 import json
 from django.core.paginator import Paginator
 
-from .models import User,Post,Followers,Following
+from .models import User,Post,Followers,Following,Likes
 
 
 def index(request):
@@ -46,10 +46,15 @@ def login_view(request):
 
 
 
+
 #logout
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
+
+
+
+
 
 
 
@@ -85,6 +90,17 @@ def register(request):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 #all post
 @login_required
 def all_post(request,page_num):
@@ -96,6 +112,8 @@ def all_post(request,page_num):
 
 
     all_post = Post.objects.all().order_by("-created")
+    user_likes  = Likes.objects.filter(user=request.user)
+    user_liked_post = [x.liked_posts for x in user_likes]
     pages = Paginator(all_post,10)  # show 10 post per page
 
     if page_num > pages.num_pages:
@@ -105,12 +123,23 @@ def all_post(request,page_num):
       
         return render(request, "network/all_post.html",{
             "current_page":current_page,
-            "number_of_pages":pages.num_pages
+            "number_of_pages":pages.num_pages,
+            "liked_posts":user_liked_post
         })
     except Exception as e:
         print(e)
         return HttpResponse("no page")
    
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -127,6 +156,10 @@ def following(request,page_num):
         })
     
     users_following = Following.objects.filter(user=request.user)
+
+    user_likes  = Likes.objects.filter(user=request.user)
+    user_liked_post = [x.liked_posts for x in user_likes]
+
     user_set = [user.following for user in users_following]
     print(user_set)
     following_post = Post.objects.filter(user__in= user_set).order_by("-created")
@@ -144,11 +177,24 @@ def following(request,page_num):
     try:
         current_page = pages.get_page(page_num)
         return render(request,"network/following.html",{
-            "current_page":current_page
+            "current_page":current_page,
+             "liked_posts":user_liked_post
         })
     except Exception as e:
         print(e)
   
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -191,17 +237,22 @@ def profile(request,id):
         user_p = User.objects.get(pk=id)
         user_post = Post.objects.filter(user=user_p).order_by("-created")
 
+        user_likes  = Likes.objects.filter(user=request.user)
+        user_liked_post = [x.liked_posts for x in user_likes]
+
         if user_p in [x.following for x in request.user.user_following.all()]:
             print("here")
             return render(request,"network/profile.html",{
             "user_post":user_post,
             "user_profile" : user_p,
-            "following": "true"
+            "following": "true",
+            "liked_posts":user_liked_post
             })
 
         return render(request,"network/profile.html",{
         "user_post":user_post,
-        "user_profile" : user_p
+        "user_profile" : user_p,
+        "liked_posts":user_liked_post
     })
     except User.DoesNotExist:
         return HttpResponse("error, user not found")
@@ -252,6 +303,23 @@ def edit_post(request):
         return JsonResponse({
             "error":"send a valid edit"
         },status=404)
+    
+    return JsonResponse({
+        "error":"request must be a PUT request"
+    },status=404)
+         
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -270,30 +338,63 @@ def like_or_unlike(request):
             post = Post.objects.get(id=request_data.get("id"))
 
             #if user wants to like
-            if request_data.get("like"):
-                post.likes = post.likes + 1
-                post.save()
-                return JsonResponse({
-                    "liked":True,
-                    "current_likes": post.likes,
-                    "post_id": post.id
-                })
+            if request_data.get("like") == "true":
+                try:
+                    post.likes = post.likes + 1
+                    new_like = Likes.objects.create(user=request.user,liked_posts=post)
+                    print("liked")
+                    new_like.save()
+                    post.save()
+                    return JsonResponse({
+                        "liked":True,
+                        "current_likes": post.likes,
+                        "post_id": post.id
+                    })
+                except Exception as e:
+                    print(e)
+                    return  JsonResponse({
+                        "error":"something happened,could not like post at this time"
+                    })
+
 
 
             #if user want to unlike
-            post.likes = post.likes  - 1
-            post.save()
-            return JsonResponse({
-                "liked":False,
-                "current_likes": post.likes,
-                "post_id": post.id
-            })
+            try:
+
+                Likes.objects.get(user=request.user,liked_posts=post).delete()
+                print("deleted")
+                post.likes = post.likes  - 1
+                post.save()
+                return JsonResponse({
+                    "liked":False,
+                    "current_likes": post.likes,
+                    "post_id": post.id
+                })
+            except Exception as e:
+                print(e)
+                return JsonResponse({
+                    "error":"something went wrong"
+                })
         except Post.DoesNotExist:
             return HttpResponse("culd not find post")
     return JsonResponse({
         "error":"request must be a PUT request"
     },status=404)
             
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -371,6 +472,18 @@ def follow_or_unfollow(request):
     },status=404)
 
             
+
+
+
+
+
+
+
+
+
+
+
+
 def edit(request):
     if request.method == "PUT":
         request_data= json.loads(request.body)
@@ -384,7 +497,7 @@ def edit(request):
                 return JsonResponse({
                     "error":"could not update post at this time"
                 })
-                
+
             post_to_update.content = request_data.get("new_content")
             post_to_update.save()
             return JsonResponse({
