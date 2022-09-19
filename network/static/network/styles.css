@@ -56,6 +56,8 @@ a:hover{
 
 .post-text-area{
     border: none;
+    white-space: pre-line; 
+    white-space: pre-wrap; 
 }
 
 textarea {
@@ -80,9 +82,15 @@ textarea {
 
 
 .post-content{
-    font-size: 19px;
+    font-size: 17px;
+    white-space: pre-line; 
+    white-space: pre-wrap; 
 }
 
+.edit-post{
+    margin-top: -8px;
+
+}
 
 
 .nav-img{

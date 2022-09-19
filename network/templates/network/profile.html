@@ -2,17 +2,13 @@
 
 {% block body %}
 
-
-
-
-
-
+<input type="hidden" value="2" class = "page_id">
 <div class="container ">
     <div class="border-bottom pb-2">
         <p class=""><span class= "display-4 font-weight-bolder">@{{user_profile.username}}</span> </p>
         <span class="mx-2 font-italic">Following <span class="text-muted">{{user_profile.user_following.count}}</span></span>  
         <span class="mx-4 font-italic">Followers <span class="text-muted followers">{{user_profile.user_followers.count}}</span></span> 
-         <span class="mx-3 text-muted">Joined: {{user.joined}}</span>
+         <span class="mx-3 text-muted">Joined: {{user_profile.date_joined}}</span>
          {% if   user != user_profile  and user.is_authenticated%}
             <div class="mt-4">
                 <span> <button class=" unfollowed btn btn-outline-primary " id="follow_unfollow" data-id = "{{user_profile.id}}">Follow</button> </span>

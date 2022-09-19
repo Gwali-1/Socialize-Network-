@@ -2,6 +2,7 @@
 
 
 
+
 //elements
 const likeBtns = document.querySelectorAll(".like-btn");
 const token = document.querySelector("meta[name='token'").getAttribute("content");
@@ -9,27 +10,88 @@ const followersNumber = document.querySelector(".followers");
 const followBtn = document.querySelector("#follow_unfollow");
 const profileError = document.querySelector(".profile-error");
 const checkFollow = document.querySelector("#checkFollow");
+const page_id =Number(document.querySelector(".page_id").value);
+const editPost = document.querySelectorAll(".edit-post");
+const saveUpdate = document.querySelectorAll(".save-update")
+
+
 
 
 let follow_action;
-
 let action = true
 
 
+saveUpdate.forEach(btn => {
+    console.log(btn.dataset.id)
+})
+console.log("edit",editPost)
 
 
-if(checkFollow){
-    follow_action = false;
-}else{
-    follow_action = true;
-}
 
-console.log("action",follow_action)
+
+
+
+
+
 
 
 
 //functions
 
+const updatePost = function (event){
+    event.preventDefault()
+    const postDiv = document.querySelector(`#post-${this.dataset.id}-div`);
+    const content = document.querySelector(`#post-${this.dataset.id}-update`);
+    const updateForm = document.querySelector(`#update-form-${this.dataset.id}`);
+    const postcontent = document.querySelector(`.post-content-${this.dataset.id}`);
+    
+    console.log(postDiv)
+    console.log(content)
+    console.log(postcontent)
+    ///
+
+
+    fetch("/edit",{
+        method:"PUT",
+        headers:{"X-CSRFToken": token},
+        body:JSON.stringify({
+            id:this.dataset.id,
+            new_content:content.value
+        })
+    }).then(response => response.json()).then(result => {
+        updateForm.classList.add("hidden");
+        postcontent.textContent = result.new_update;
+        postDiv.classList.remove("hidden");
+
+        
+    })
+}
+
+
+
+
+
+const editPostContent = function (event){
+    event.preventDefault();
+
+    const postDiv = document.querySelector(`#post-${this.dataset.id}-div`);
+    const postcontent = document.querySelector(`.post-content-${this.dataset.id}`);
+    const content = document.querySelector(`#post-${this.dataset.id}-update`);
+    const updateForm = document.querySelector(`#update-form-${this.dataset.id}`);
+
+
+    postDiv.classList.add("hidden");
+    updateForm.classList.remove("hidden");
+    content.value = postcontent.textContent
+
+}
+
+
+
+
+
+
+//changingFollowbuttonLook
 const followBtnDisplay = function (state){
     console.log(state)
     if(state){
@@ -45,9 +107,15 @@ const followBtnDisplay = function (state){
 
 
 
-followBtnDisplay(follow_action);
 
 
+
+
+
+
+
+
+//follow/unfollow
 const followUnfollow = function () {
     fetch("/follows",{
         method: "PUT",
@@ -62,32 +130,12 @@ const followUnfollow = function () {
             profileError.textContent = result.error
             return
         }
-        
-        
-
-        //change follow button state
-        // if(result.followed){
-        //     followBtn.textContent ="Following";
-        //     followBtn.classList.remove("unfollowed");
-        //     followBtn.classList.add("followed");
-        // }else{
-        //     followBtn.textContent ="Follow";
-        //     followBtn.classList.remove("followed");
-        //     followBtn.classList.add("unfollowed");
-        // }
+    
 
         followBtnDisplay(!result.followed);
         followersNumber.textContent = result.current_followers;
         follow_action=!result.followed;
         console.log(follow_action)
-
-        // if(followBtn.classList.contains("unfollowed")){
-            
-        // }else{
-        //     console.log(followBtn)
-           
-        // }
-       
 
 
     }))
@@ -97,8 +145,13 @@ const followUnfollow = function () {
 
 
 
-const likeUnlikePost = function (e) {
-    e.preventDefault();
+
+
+
+
+//like/unlike
+ const likeUnlikePost = function (event) {
+    event.preventDefault();
     fetch("/favourite",{
         method: "PUT",
         headers:{"X-CSRFToken":token},
@@ -130,9 +183,50 @@ const likeUnlikePost = function (e) {
 
 
 
-likeBtns.forEach(btn => {
-    btn.onclick = likeUnlikePost
-});
 
 
-followBtn.onclick = followUnfollow;
+
+
+
+
+//driver code
+
+if(page_id === 1){
+    likeBtns.forEach(btn => {
+        console.log("gooooooo")
+        btn.onclick =  likeUnlikePost;
+    });
+
+
+    editPost.forEach(btn =>{
+        btn.onclick = editPostContent;
+    })
+
+
+    saveUpdate.forEach(btn => {
+        btn.onclick = updatePost;
+    })
+
+    
+}
+
+
+
+
+
+if(page_id == 2){
+
+    if(checkFollow){
+        follow_action = false;
+    }else{
+        follow_action = true;
+    }
+
+    followBtnDisplay(follow_action);
+    followBtn.onclick = followUnfollow;
+}
+
+
+
+
+

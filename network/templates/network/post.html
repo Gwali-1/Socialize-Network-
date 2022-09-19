@@ -3,14 +3,15 @@
 
 {% block body %}
 
+<a href=" {% url 'all_post' 1%}" class="  blue-color-tone d-block mt-2 "> <<< Back</a>
 <div class=" post-form container ">
 
     {% if error %}
-        {{error}}
+        <p class="text-danger posts">{{error}}</p>
     {% endif %}
     <form class=" " action="{% url 'new_post' %}" method="post">
         {% csrf_token %}
-        <a class="border" href=""><i class="bi bi-person-fill"></i><strong class ="">@{{ user.username }}</strong></a>
+        <a class="border  blue-color-tone" href=""><i class="bi bi-person-fill"></i><strong class ="">@{{ user.username }}</strong></a>
         <div class="">
             <textarea class=" post-text-area border d-block w-100 " name="content" id="" rows="4" placeholder="whats on your mind ..." autofocus ></textarea>
         </div>

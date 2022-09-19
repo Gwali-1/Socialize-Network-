@@ -127,7 +127,8 @@ def following(request,page_num):
         })
     
     users_following = Following.objects.filter(user=request.user)
-    user_set = [user for user in users_following]
+    user_set = [user.following for user in users_following]
+    print(user_set)
     following_post = Post.objects.filter(user__in= user_set).order_by("-created")
 
     pages = Paginator(following_post,10)
@@ -370,5 +371,32 @@ def follow_or_unfollow(request):
     },status=404)
 
             
+def edit(request):
+    if request.method == "PUT":
+        request_data= json.loads(request.body)
+        if not request_data.get("new_content"):
+            pass
+           
+        try:
+            post_to_update = Post.objects.get(pk=request_data.get("id"))
 
-   
+            if not request.user == post_to_update.user:
+                return JsonResponse({
+                    "error":"could not update post at this time"
+                })
+                
+            post_to_update.content = request_data.get("new_content")
+            post_to_update.save()
+            return JsonResponse({
+                "updated":True,
+                "new_update":post_to_update.content
+            }) 
+            
+        except Post.DoesNotExist:
+            return JsonResponse({
+                "error":"could not edit post at this time"
+            })
+    return JsonResponse({
+        "error":"request must be a PUT request"
+    },status=4)
+    
