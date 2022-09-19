@@ -1,5 +1,6 @@
+from atexit import register
 from django.contrib import admin
-from .models import User,Post,Followers,Following
+from .models import User,Post,Followers,Following,Likes
 
 
 # Register your models here.
@@ -18,6 +19,7 @@ class Followingadmin(admin.ModelAdmin):
     list_display = ("id","user","following")
 
 admin.site.register(User)
+admin.site,register(Likes)
 admin.site.register(Post,Postadmin)
 admin.site.register(Followers,Followersadmin)
 admin.site.register(Following,Followingadmin)

@@ -12,7 +12,6 @@ class User(AbstractUser):
         return f"{self.username}"
 
 
-
 class Post(models.Model):
     content = models.CharField(max_length=200)
     likes = models.IntegerField(default=0)
@@ -30,6 +29,9 @@ class Post(models.Model):
             "user": self.user
         }
 
+class Likes(models.Model):
+    liked_posts = models.ForeignKey(Post,on_delete=models.CASCADE,related_name="liked_posts")
+    user = models.ForeignKey(User,on_delete=models.CASCADE, related_name="user_likes")
 
 
 class Followers(models.Model):
