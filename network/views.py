@@ -223,9 +223,21 @@ def new_post(request):
   
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 #profile
 @login_required
-def profile(request,id):
+def profile(request,id,page_num):
     
     if not  request.user.is_authenticated:
         return render(request,"network/login.html",{
@@ -240,17 +252,20 @@ def profile(request,id):
         user_likes  = Likes.objects.filter(user=request.user)
         user_liked_post = [x.liked_posts for x in user_likes]
 
+
+        pages = Paginator(user_post,10)
+        current_pages = pages.get_page(page_num)
         if user_p in [x.following for x in request.user.user_following.all()]:
             print("here")
             return render(request,"network/profile.html",{
-            "user_post":user_post,
+            "user_post":current_pages,
             "user_profile" : user_p,
             "following": "true",
             "liked_posts":user_liked_post
             })
 
         return render(request,"network/profile.html",{
-        "user_post":user_post,
+        "user_post":current_pages,
         "user_profile" : user_p,
         "liked_posts":user_liked_post
     })
@@ -341,6 +356,15 @@ def like_or_unlike(request):
             if request_data.get("like") == "true":
                 try:
                     post.likes = post.likes + 1
+
+                    #check if post is liked
+                    if(Likes.objects.filter(user=request.user,liked_posts=post)):
+                        return JsonResponse({
+                            "error":"you already liked post"
+                        })
+                   
+                   
+
                     new_like = Likes.objects.create(user=request.user,liked_posts=post)
                     print("liked")
                     new_like.save()

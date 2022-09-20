@@ -166,7 +166,6 @@ const followUnfollow = function () {
             console.log(result)
             this.innerHTML =`<i class="bi bi-hand-thumbs-up"></i>`
             this.dataset.action = "true"
-            console.log(action,result.liked)
         }
         
     }).catch(error => console.log(error))
@@ -190,7 +189,7 @@ const followUnfollow = function () {
 
 //driver code
 
-if(page_id === 1){
+
     likeBtns.forEach(btn => {
         console.log("gooooooo")
         btn.onclick =  likeUnlikePost;
@@ -207,7 +206,7 @@ if(page_id === 1){
     })
 
     
-}
+
 
 
 
@@ -220,9 +219,13 @@ if(page_id == 2){
     }else{
         follow_action = true;
     }
+    if (followBtn){
+        followBtnDisplay(follow_action);
+        followBtn.onclick = followUnfollow;
+    }
 
-    followBtnDisplay(follow_action);
-    followBtn.onclick = followUnfollow;
+    
+
 }
 
 
