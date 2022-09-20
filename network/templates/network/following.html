@@ -2,24 +2,57 @@
 
 
 {% block body %}
-<input type="hidden" value="1" class = "page_id">
-<p class=""><strong class= "display-5 font-italic fw-bolder">Posts from users you follow</strong> </p>
-<div class=" border-primary posts" >
 
-    {% for post in current_page %}
-    <div class=" mt-3  border-bottom w-75">
-        <a class="border " href=" {% url 'profile' post.user.id %}"><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ post.user.username }}</strong></a>
-        <div>
-            <p class="post-content text-break">{{post.content|linebreaksbr}}</p>
-            <p class="date text-muted ">{{post.created}}</p>
+    <input type="hidden" value="1" class = "page_id">
+    <p class=""><strong class= "display-5 font-italic fw-bolder">Posts from users you follow</strong> </p>
+    <div class=" border-primary posts" >
+
+        {% for post in current_page %}
+        <div class=" mt-3  border-bottom w-75">
+            <a class="border " href=" {% url 'profile' post.user.id 1%}"><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ post.user.username }}</strong></a>
+            <div id="post-{{post.id}}-div">
+                <p class="post-content-{{post.id}} text-break post-content ">{{post.content|linebreaksbr}}</p>
+                <p class="date text-muted ">{{post.created}}</p> 
+                {% if post.user == request.user %}
+                    <a href="" class="edit-post border d-block text-info w-25" data-id="{{post.id}}">Edit</a>
+                {% endif %}
+            </div>
+
+
+
+
+            <!-- edit -->
+
+            {% if post.user == request.user %}
+                <div class="w-50 hidden  " id="update-form-{{post.id}}">
+                    <form class=" " action="{}" method="post">
+                        {% csrf_token %}
+                        <div class="">
+                            <textarea class="  post-text-area border d-block w-100  " name="new_content" id="post-{{post.id}}-update" rows="3" placeholder="whats on your mind ..." autofocus ></textarea>
+                        </div>
+                    
+                        <div class="d-flex justify-content-between">
+                            <a href=""> cancel</a>
+                            <input class="btn blue-bg-color-tone save-update btn-primary "  data-id="{{post.id}}" type="submit" value="save">
+                            
+                        </div>
+                    
+                        
+                    </form>
+                </div>
+            {% endif %}
+            
+            {% if post  in liked_posts%}
+                <a ><i class="bi bi-heart-fill blue-color-tone" id="like-{{post.id}}">{{post.likes}}</i>    <a href="" class="mx-4 text-danger like-btn" data-id ="{{post.id}}"  data-action="false"><i class="bi bi-hand-thumbs-up-fill"></i></a>   
+            {% else %}
+                <a ><i class="bi bi-heart-fill blue-color-tone" id="like-{{post.id}}">{{post.likes}}</i>    <a href="" class="mx-4 text-danger like-btn" data-id ="{{post.id}}"  data-action="true"><i class="bi bi-hand-thumbs-up"></i></a>   
+            {% endif %}
         </div>
-        
-        <a ><i class="bi bi-heart-fill blue-color-tone" id="like-{{post.id}}">{{post.likes}}</i>    <a href="" class="mx-4 text-danger like-btn" data-id ="{{post.id}}"><i class="bi bi-hand-thumbs-up"></i></a>   
-    </div>
 
-    {%empty%}
-    nothing here
-    {% endfor %}
+        {%empty%}
+        nothing here
+        {% endfor %}
+
 
     <div class="p-5"></div>
 
@@ -27,28 +60,33 @@
 
 
 
+
+
+
+
+
 {% block footer %}
-<!-- paggination -->
-<div class="">
-    <nav aria-label="..." class= "fixed-bottom  d-flex justify-content-center ">
-        <ul class="pagination pagination-lg">
+    <!-- paggination -->
+    <div class="">
+        <nav aria-label="..." class= "fixed-bottom  d-flex justify-content-center ">
+            <ul class="pagination pagination-lg">
 
-            {% if current_page.has_previous %}
-            <li class="page-item"><a class="page-link" href="{% url 'all_post' current_page.previous_page_number %}">{{current_page.previous_page_number}}</a></li>
+                {% if current_page.has_previous %}
+                <li class="page-item"><a class="page-link" href="{% url 'all_post' current_page.previous_page_number %}">{{current_page.previous_page_number}}</a></li>
+                {% endif %}
+
+            <li class="page-item active" aria-current="page">
+                <span class="page-link">
+                {{current_page.number}}
+                <span class="sr-only">(current)</span>
+                </span>
+            </li>
+            
+            {% if current_page.has_next %}
+            <li class="page-item"><a class="page-link" href="{% url 'all_post' current_page.next_page_number %}">{{current_page.next_page_number}}</a></li>
             {% endif %}
-
-          <li class="page-item active" aria-current="page">
-            <span class="page-link">
-              {{current_page.number}}
-              <span class="sr-only">(current)</span>
-            </span>
-          </li>
-         
-          {% if current_page.has_next %}
-          <li class="page-item"><a class="page-link" href="{% url 'all_post' current_page.next_page_number %}">{{current_page.next_page_number}}</a></li>
-          {% endif %}
-        
-        </ul>
-      </nav>
-</div>
+            
+            </ul>
+        </nav>
+    </div>
 {% endblock footer %}
