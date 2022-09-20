@@ -363,7 +363,7 @@ def like_or_unlike(request):
                             "error":"you already liked post"
                         })
                    
-                   
+
 
                     new_like = Likes.objects.create(user=request.user,liked_posts=post)
                     print("liked")
@@ -512,7 +512,9 @@ def edit(request):
     if request.method == "PUT":
         request_data= json.loads(request.body)
         if not request_data.get("new_content"):
-            pass
+            return JsonResponse({
+                "error":"no updated content recieved"
+            })
            
         try:
             post_to_update = Post.objects.get(pk=request_data.get("id"))
