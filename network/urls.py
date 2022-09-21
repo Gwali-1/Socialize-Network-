@@ -14,7 +14,6 @@ urlpatterns = [
     path("profile/user<int:id>/page<int:page_num>",views.profile,name="profile"),
 
     #APi routes
-    path("edit_post",views.edit_post,name="edit_post"),
     path("favourite",views.like_or_unlike,name="like_or_unlike"),
     path("follows",views.follow_or_unfollow,name="follow_or_unfollow"),
     path("edit",views.edit,name="edit_post")

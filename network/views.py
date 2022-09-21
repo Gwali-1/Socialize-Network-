@@ -1,5 +1,3 @@
-from pprint import pprint
-from turtle import pos
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
@@ -117,7 +115,7 @@ def all_post(request,page_num):
     pages = Paginator(all_post,10)  # show 10 post per page
 
     if page_num > pages.num_pages:
-        return HttpResponse("error")
+        return HttpResponseRedirect(reverse("index"))
     try:
         current_page = pages.get_page(page_num)
       
@@ -127,8 +125,7 @@ def all_post(request,page_num):
             "liked_posts":user_liked_post
         })
     except Exception as e:
-        print(e)
-        return HttpResponse("no page")
+        return HttpResponseRedirect(reverse("index"))
    
 
 
@@ -161,13 +158,12 @@ def following(request,page_num):
     user_liked_post = [x.liked_posts for x in user_likes]
 
     user_set = [user.following for user in users_following]
-    print(user_set)
     following_post = Post.objects.filter(user__in= user_set).order_by("-created")
 
     pages = Paginator(following_post,10)
 
     if page_num > pages.num_pages:
-            return HttpResponse("error")
+            return HttpResponseRedirect(reverse("index"))
 
 
     if not  request.user.is_authenticated:
@@ -181,7 +177,7 @@ def following(request,page_num):
              "liked_posts":user_liked_post
         })
     except Exception as e:
-        print(e)
+        return HttpResponseRedirect(reverse("index"))
   
 
 
@@ -205,7 +201,6 @@ def following(request,page_num):
 @login_required
 def new_post(request):
     if request.method == "POST":
-        print("here")
         post = request.POST["content"]
         if post:
             try:
@@ -213,8 +208,9 @@ def new_post(request):
                  new_post.save()
                  return HttpResponseRedirect(reverse("index"))
             except Exception as e:
-                print(e)
-                return HttpResponse("could not add post: ",e)
+                return render(request,"network/post.html",{
+                    "error":"something went wrong, could not add post at this time"
+        })
         return render(request,"network/post.html",{
             "error":"enter valid post"
         })
@@ -256,7 +252,6 @@ def profile(request,id,page_num):
         pages = Paginator(user_post,10)
         current_pages = pages.get_page(page_num)
         if user_p in [x.following for x in request.user.user_following.all()]:
-            print("here")
             return render(request,"network/profile.html",{
             "user_post":current_pages,
             "user_profile" : user_p,
@@ -270,7 +265,7 @@ def profile(request,id,page_num):
         "liked_posts":user_liked_post
     })
     except User.DoesNotExist:
-        return HttpResponse("error, user not found")
+        return HttpResponseRedirect(reverse("index"))
 
   
 
@@ -301,43 +296,6 @@ def profile(request,id,page_num):
 
 #state changing routes
 
-#edit
-@csrf_protect
-@login_required
-def edit_post(request):
-    if request.method == "PUT":
-        request_data = json.loads(request.body)
-        if request_data.edited:
-                try:
-                    post = Post.objects.get(id=request_data.id,user=request.user)
-                    post.content = request_data.edited.strip()
-                    post.save()
-                except Post.DoesNotExist:
-                    return HttpResponse("could not find post ")
-                return JsonResponse(post.serialize(),safe=False)
-        return JsonResponse({
-            "error":"send a valid edit"
-        },status=404)
-    
-    return JsonResponse({
-        "error":"request must be a PUT request"
-    },status=404)
-         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -346,9 +304,7 @@ def edit_post(request):
 @login_required
 def like_or_unlike(request):
     if request.method == "PUT":
-        print(request.body)
         request_data = json.loads(request.body)
-        print(request_data.get("id"))
         try:
             post = Post.objects.get(id=request_data.get("id"))
 
@@ -366,7 +322,6 @@ def like_or_unlike(request):
 
 
                     new_like = Likes.objects.create(user=request.user,liked_posts=post)
-                    print("liked")
                     new_like.save()
                     post.save()
                     return JsonResponse({
@@ -375,7 +330,6 @@ def like_or_unlike(request):
                         "post_id": post.id
                     })
                 except Exception as e:
-                    print(e)
                     return  JsonResponse({
                         "error":"something happened,could not like post at this time"
                     })
@@ -386,7 +340,6 @@ def like_or_unlike(request):
             try:
 
                 Likes.objects.get(user=request.user,liked_posts=post).delete()
-                print("deleted")
                 post.likes = post.likes  - 1
                 post.save()
                 return JsonResponse({
@@ -395,12 +348,13 @@ def like_or_unlike(request):
                     "post_id": post.id
                 })
             except Exception as e:
-                print(e)
                 return JsonResponse({
                     "error":"something went wrong"
                 })
         except Post.DoesNotExist:
-            return HttpResponse("culd not find post")
+            return JsonResponse({
+                    "error":"something went wrong,could not like post"
+                })
     return JsonResponse({
         "error":"request must be a PUT request"
     },status=404)
@@ -445,7 +399,6 @@ def follow_or_unfollow(request):
                      })
 
                     try:
-                        print("ok")
                         new_following = Following.objects.create(user=request.user,following=user)
                         new_follower = Followers.objects.create(user=user,follower=request.user)
                         user.followers_number += 1
@@ -461,22 +414,21 @@ def follow_or_unfollow(request):
                             "current_followers" :user.followers_number
                         })
                     except Exception as e:
-                        print(e)
+                        return JsonResponse({
+                            "error":"could not follow user at this time ,try again later"
+                        })
                
                 try:
                     
-                    print("not unfollowing")
                     Following.objects.get(user=request.user ,following=user).delete()
                     Followers.objects.get(user=user, follower = request.user).delete()
                     user.followers_number -= 1
-                    print(request.user.following_number)
                     user.save()
                     return JsonResponse({
                         "followed":False,
                          "current_followers" :user.followers_number
                     })
                 except Exception as e:
-                    print(e)
                     return JsonResponse({
                             "error":"oops something happened , try again later"
                      },status=404)
@@ -506,12 +458,16 @@ def follow_or_unfollow(request):
 
 
 
-
-
+@csrf_protect
+@login_required
 def edit(request):
     if request.method == "PUT":
         request_data= json.loads(request.body)
         if not request_data.get("new_content"):
+            return JsonResponse({
+                "error":"no updated content recieved"
+            })
+        if request_data.get("new_content").isspace():
             return JsonResponse({
                 "error":"no updated content recieved"
             })

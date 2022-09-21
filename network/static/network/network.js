@@ -47,10 +47,16 @@ const updatePost = function (event){
             new_content:content.value
         })
     }).then(response => response.json()).then(result => {
-        updateForm.classList.add("hidden");
-        postcontent.textContent = result.new_update;
-        postDiv.classList.remove("hidden");
-
+        if( result.error){
+            console.log("err")
+            updateForm.classList.add("hidden");
+            postDiv.classList.remove("hidden");
+        }else{
+            updateForm.classList.add("hidden");
+            postcontent.textContent = result.new_update;
+            postDiv.classList.remove("hidden");
+        }
+      
         
     }).catch(error => console.log(error))
 }
