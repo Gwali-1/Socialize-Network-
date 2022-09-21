@@ -50,6 +50,10 @@ a:hover{
     text-decoration: none;
 }
 
+.post-button{
+    margin-left:70%;
+}
+
 .posts{
     font-family:'Times New Roman', Times, serif;
 }

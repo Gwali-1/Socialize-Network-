@@ -27,12 +27,12 @@
         
         {% for post in user_post %}
         <div class=" mt-3  border-bottom w-75">
-            <a class="border " href=" {% url 'profile' post.user.id 1 %}"><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ post.user.username }}</strong></a>
+            <a class=" " href=" {% url 'profile' post.user.id 1 %}"><i class="bi bi-person-fill  blue-color-tone"></i><strong class=" blue-color-tone">@{{ post.user.username }}</strong></a>
             <div id="post-{{post.id}}-div">
                 <p class="post-content-{{post.id}} text-break post-content ">{{post.content|linebreaksbr}}</p>
                 <p class="date text-muted ">{{post.created}}</p> 
                 {% if post.user == request.user %}
-                    <a href="" class="edit-post border d-block text-info w-25" data-id="{{post.id}}">Edit</a>
+                    <a href="" class="edit-post  d-block text-info w-25" data-id="{{post.id}}">Edit</a>
                 {% endif %}
             </div>
     
