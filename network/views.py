@@ -46,6 +46,7 @@ def login_view(request):
 
 
 #logout
+@login_required
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
@@ -145,6 +146,7 @@ def all_post(request,page_num):
 
 
 #following
+@login_required
 def following(request,page_num):
 
     if not  request.user.is_authenticated:
@@ -429,6 +431,7 @@ def follow_or_unfollow(request):
                          "current_followers" :user.followers_number
                     })
                 except Exception as e:
+                    print(e)
                     return JsonResponse({
                             "error":"oops something happened , try again later"
                      },status=404)
